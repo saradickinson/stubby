@@ -1,11 +1,14 @@
 #include "config.h"
 
+#include <stdio.h>
+
 #include "log.h"
 
 static void default_stubby_verror(getdns_loglevel_type level, const char *fmt, va_list ap)
 {
         (void) level;
         (void) vfprintf(stderr, fmt, ap);
+        (void) fputc('\n', stderr);
 }
 
 static void default_stubby_vlog(void *userarg, uint64_t system,
