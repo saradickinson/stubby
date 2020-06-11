@@ -164,8 +164,8 @@ main(int argc, char **argv)
 
 #if defined(STUBBY_ON_WINDOWS)
 	if ( windows_service ) {
-		/* The following exits. */
-		windows_service_command(windows_service_arg);
+		windows_service_command(windows_service_arg, log_connections ? log_level : 0);
+		exit(EXIT_SUCCESS);
 	}
 #endif
 
