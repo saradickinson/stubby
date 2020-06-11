@@ -648,8 +648,8 @@ main(int argc, char **argv)
 				fclose(fh);
 			} else {
 				stubby_error("Could not write pid to "
-				        "\"%s\": %s\n", STUBBYPIDFILE,
-				        strerror(errno));
+					     "\"%s\": %s", STUBBYPIDFILE,
+					     strerror(errno));
 				exit(EXIT_FAILURE);
 			}
 		} else {
