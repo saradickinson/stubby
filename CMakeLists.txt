@@ -115,7 +115,7 @@ if (STUBBY_ON_WINDOWS)
   endif ()
 
   add_custom_command(
-    OUTPUT service.rc
+    OUTPUT service.rc service.h
     MAIN_DEPENDENCY src/windows/service.mc
     COMMAND ${CMAKE_MC_COMPILER}
     ARGS -U
