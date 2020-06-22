@@ -142,7 +142,7 @@ if (STUBBY_ON_WINDOWS)
   target_sources(stubby PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/stubby.rc)
 endif ()
 if (ENABLE_WINDOWS_SERVICE)
-  target_sources(stubby PRIVATE src/windows/service.c)
+  target_sources(stubby PRIVATE src/windows/service.c ${CMAKE_CURRENT_BINARY_DIR}/service.h)
   target_include_directories(stubby PRIVATE src/windows ${CMAKE_CURRENT_BINARY_DIR})
 
   add_library(stubres SHARED
