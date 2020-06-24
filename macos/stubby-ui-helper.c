@@ -97,7 +97,7 @@ void check_auth(const char *auth, const char *right)
 
 void usage()
 {
-        fprintf(stderr, "Usage: stubby_ui_helper [-auth <auth_key>] [-config <config file>] (start|stop|list|dns_stubby|dns_default|dns_list|check_config|write_config)\n");
+        fprintf(stderr, "Usage: stubby_ui_helper [-auth <auth_key>] [-config <config file>] (start|stop|list|dns_stubby|dns_default|dns_list|dns_get_wifi_ssid|dns_get_active_networks|check_config|write_config)\n");
         exit(1);
 }
 
@@ -166,6 +166,24 @@ void dns_list()
         int err = execl(STUBBY_SETDNS, STUBBY_SETDNS, "-l", NULL);
         if (err == -1)
                 fail_with_errno("dns_list");
+}
+
+void dns_get_wifi_ssid() {
+#ifdef HAVE_OS_LOG_H
+        log_action("Get Wifi SSID.");
+#endif
+        int err = execl(STUBBY_SETDNS, STUBBY_SETDNS, "-w", NULL);
+        if (err == -1)
+                fail_with_errno("dns_get_wifi_ssid");
+}
+
+void dns_get_active_networks() {
+#ifdef HAVE_OS_LOG_H
+        log_action("Get active networks.");
+#endif
+        int err = execl(STUBBY_SETDNS, STUBBY_SETDNS, "-n", NULL);
+        if (err == -1)
+                fail_with_errno("dns_get_active_networks");
 }
 
 void check_config(const char *config_file)
@@ -250,10 +268,15 @@ int main(int ac, char *av[])
         }
         else if (strcmp(cmd, "dns_list") == 0)
                 dns_list();
+        else if (strcmp(cmd, "dns_get_wifi_ssid") == 0)
+                dns_get_wifi_ssid();
+        else if (strcmp(cmd, "dns_get_active_networks") == 0)
+                dns_get_active_networks();
         else if (strcmp(cmd, "check_config") == 0)
                check_config(config_file);
         else if (strcmp(cmd, "write_config") == 0)
-                write_config(config_file);
+               write_config(config_file);
+                
 
         /* If we get here, there's a problem... */
         usage();

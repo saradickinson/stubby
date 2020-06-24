@@ -42,18 +42,43 @@ usage () {
     echo "Supported options:"
     echo "  -r Reset DNS resolvers to the default ones (e.g. from DHCP)"
     echo "  -l List the current DNS settings for all interfaces"
+    echo "  -w List the current wifi ssid"
+    echo "  -n List the current active networks"
     echo "  -h Show this help."
+}
+
+get_active_networks () {
+    while read -r line; do
+        sname=$(echo "$line" | awk -F  "(, )|(: )|[)]" '{print $2}')
+        sdev=$(echo "$line" | awk -F  "(, )|(: )|[)]" '{print $4}')
+        #echo "Current service: $sname, $sdev, $currentservice"
+        if [ -n "$sdev" ]; then
+            ifout="$(ifconfig "$sdev" 2>/dev/null)"
+            echo "$ifout" | grep 'status: active' > /dev/null 2>&1
+            rc="$?"
+            if [ "$rc" -eq 0 ]; then
+                currentservice="$sname"
+                currentdevice="$sdev"
+                # may have multiple active devices, so echo it here
+                echo "$currentservice"
+            fi
+        fi
+    done <<< "$(networksetup -listnetworkserviceorder | grep 'Hardware Port')"
 }
 
 RESET=0
 LIST=0
+WIFI=0
+NETWORKS=0
 SERVERS="127.0.0.1 ::1"
 OS_X=$(uname -a | grep -c 'Darwin')
 
-while getopts ":rlh" opt; do
+while getopts ":rlhwn" opt; do
     case $opt in
         r  ) RESET=1 ;;
         l  ) LIST=1 ;;
+        w  ) WIFI=1 ;;
+        n  ) NETWORKS=1 ;;
         h  ) usage
              exit 1 ;;
         \? ) usage
@@ -74,6 +99,18 @@ if [[ $LIST -eq 1 ]]; then
         RESULT=$(echo $RESULT)
         printf '%-30s %s\n' "$x:" "$RESULT"
     done
+    exit 1
+fi
+
+if [[ $WIFI -eq 1 ]]; then
+    networksetup -listallhardwareports | awk '/Wi-Fi/{getline; print $2}' | xargs networksetup -getairportnetwork | awk '$3 ~ "Network:" {print $4}' 2>/dev/null | grep -v '\*' | while read -r x ; do
+        echo "$x"
+    done
+    exit 1
+fi
+
+if [[ $NETWORKS -eq 1 ]]; then
+    get_active_networks
     exit 1
 fi
 
