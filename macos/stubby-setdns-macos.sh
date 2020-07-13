@@ -60,7 +60,7 @@ get_active_networks () {
                 currentservice="$sname"
                 currentdevice="$sdev"
                 # may have multiple active devices, so echo it here
-                echo "$currentservice"
+                printf '%s\n' "$currentservice"
             fi
         fi
     done <<< "$(networksetup -listnetworkserviceorder | grep 'Hardware Port')"
